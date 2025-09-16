@@ -41,8 +41,15 @@ def signin(request):
         user = authenticate(request, user_email=email, password=password)
 
         if user:
+            user_data = UserProfileSerializer(user).data
+            print('user_data.....', user_data)
             tokens = get_tokens_for_user(user)
-            return Response(tokens, status=status.HTTP_200_OK)
+            response_data = {
+                "access": tokens["access"],
+                "refresh": tokens["refresh"],
+                "user": user_data["user_id"]
+            }
+            return Response(response_data, status=status.HTTP_200_OK)
         return Response({"error": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
